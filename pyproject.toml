@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "secure-aid-backend"
+version = "0.1.0"
+description = ""
+authors = ["dgnsrekt <dgnsrekt@pm.me>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Django = "^4.0.1"
+django-environ = "^0.8.1"
+djangorestframework = "^3.13.1"
+psycopg2 = "^2.9.3"
+django-ninja = "^0.16.1"
+
+[tool.poetry.dev-dependencies]
+black = "^21.12b0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
