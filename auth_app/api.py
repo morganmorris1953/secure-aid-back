@@ -50,3 +50,71 @@ def callback(request, code):
         return UserResponse.from_orm(user)
     else:
         return HttpResponseBadRequest(str(response.error_response))
+
+
+class CreateUser(Schema):
+    id: str
+    username: str
+    active: bool
+    verified: bool
+
+
+class CreateLinkResponse(Schema):
+    token: str
+    user: CreateUser
+    code: str
+
+
+def create_passwordless_fusion_client():
+    return FusionAuthClient(settings.FUSION_PASSWORDLESS_API_KEY, settings.FUSION_AUTH_BASE_URL)
+
+
+@router.post("/create", url_name="create_user")
+def create_user_link(request, username: str):
+    client = create_passwordless_fusion_client()
+
+    user_request = {
+        "sendSetPasswordEmail": False,
+        "skipVerification": True,
+        "user": {"username": username, "password": "password"},
+    }  # TODO: generate password
+
+    client_response = client.create_user(user_request)
+    if client_response.was_successful():
+        user = client_response.success_response
+    else:
+        return HttpResponseBadRequest(str(client_response.error_response))
+
+    # TODO: create user in db here?
+
+    link_request = {
+        "applicationId": settings.FUSION_PASSWORDLESS_APP_ID,
+        "loginId": username,
+        "state": {
+            "client_id": settings.FUSION_PASSWORDLESS_APP_ID,
+            "redirect_uri": "https://localhost:8000/callback",
+            "response_type": "code",
+            "scope": "openid",
+            "state": "CSRF123",
+        },
+    }
+
+    link_response = client.start_passwordless_login(link_request)
+    if link_response.was_successful():
+        code = link_response.success_response
+        print(code)
+    else:
+        return HttpResponseBadRequest(str(link_response.error_response))
+
+    return CreateLinkResponse(**user, **code)
+
+
+@router.post("/link_login", response=CreateUser)
+def login_with_link(request, code: str):
+    client = create_passwordless_fusion_client()
+    response = client.passwordless_login({"code": code})
+
+    if response.was_successful():
+        return response.success_response.get("user")
+    else:
+        return HttpResponseBadRequest(str(response.error_response))

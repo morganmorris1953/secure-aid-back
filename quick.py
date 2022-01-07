@@ -1,17 +1,17 @@
 from fusionauth.fusionauth_client import FusionAuthClient
 
-API_KEY = "oQHNGcV4yLsKXjYCEiF4Mhlp-u3YBLH7KyGrJANvJasJkANLpGb83pol"
-CLIENT_ID = "1b0afe15-af4d-4e77-a8b5-bae48605c5d9"
-APP_ID = "47505e1b-18d8-4aaf-8908-2d415da10d31"
+API_KEY = "5BHOqtSiyelxUy5QwgdDsA7e81GIju1JITgDaG-PlIypwlcDz8sy1scv"
+APP_ID = "109d1882-2531-40e2-8330-b49328c0028c"
 
 client = FusionAuthClient(API_KEY, "http://localhost:9011")
 
-EMAIL = "alksdjflksajdlfkjslfak"
+USERNAME = "Kevin McGee 2"
+
 
 user_request = {
     "sendSetPasswordEmail": False,
     "skipVerification": True,
-    "user": {"username": EMAIL, "password": "password"},
+    "user": {"username": USERNAME, "password": "password"},
 }
 
 client_response = client.create_user(user_request)
@@ -26,7 +26,7 @@ else:
 
 user_request = {
     "applicationId": APP_ID,
-    "loginId": EMAIL,
+    "loginId": USERNAME,
     "state": {
         "client_id": APP_ID,
         "redirect_uri": "https://localhost:8000/callback",
