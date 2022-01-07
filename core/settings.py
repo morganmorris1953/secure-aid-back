@@ -40,6 +40,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
+    "rest_framework",
+    "auth_app.apps.AuthAppConfig",
+    "birthday_app.apps.BirthdayAppConfig",
 ]
 
 MIDDLEWARE = [
@@ -133,3 +137,8 @@ VA_APPLICATION_ID = env("VA_APPLICATION_ID")
 VA_API_OATH_CLIENT_ID = env("VA_API_OATH_CLIENT_ID")
 VA_API_OATH_CLIENT_SECRET = env("VA_API_OATH_CLIENT_SECRET")
 VA_API_OATH_REDIRECT_URI = env("VA_API_OATH_REDIRECT_URI")
+
+FUSION_AUTH_APP_ID = "4b7f328c-d2ed-4599-9d2c-5041ea60258b"
+FUSION_AUTH_CLIENT_SECRET = "M_VHntTrgAf0sExdv8GeiB5NrGceYvIrP-VJn9NGQBI"
+FUSION_AUTH_API_KEY = "lMVjuHDj6X8KJTbqu6oEqdWbWaB2LYW8QiHoanYVjvGkaH7SL-C4bj_Y"
+FUSION_AUTH_BASE_URL = "http://localhost:9011"
