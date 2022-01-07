@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
+    "rest_framework",
+    "auth_app.apps.AuthAppConfig",
 ]
 
 MIDDLEWARE = [
@@ -128,8 +131,7 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-VA_API_KEY = env("VA_API_KEY")
-VA_APPLICATION_ID = env("VA_APPLICATION_ID")
-VA_API_OATH_CLIENT_ID = env("VA_API_OATH_CLIENT_ID")
-VA_API_OATH_CLIENT_SECRET = env("VA_API_OATH_CLIENT_SECRET")
-VA_API_OATH_REDIRECT_URI = env("VA_API_OATH_REDIRECT_URI")
+FUSION_AUTH_APP_ID = env("FUSION_AUTH_APP_ID")
+FUSION_AUTH_CLIENT_SECRET = env("FUSION_AUTH_CLIENT_SECRET")
+FUSION_AUTH_API_KEY = env("FUSION_AUTH_API_KEY")
+FUSION_AUTH_BASE_URL = env("FUSION_AUTH_BASE_URL")
