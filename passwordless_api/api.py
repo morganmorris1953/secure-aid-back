@@ -1,19 +1,15 @@
 from ninja import Router, Schema
-from ninja.security import HttpBearer
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse
 from django.contrib.auth.models import User
 
 from request_token.models import RequestToken
 from request_token.utils import decode
 from request_token.commands import log_token_use
 
-from django.shortcuts import render
-from request_token.decorators import use_request_token
-from django.http import HttpResponse, Http404
+from django.http import Http404
 from auth_api import schemas as auth_schemas, jwt
 
 import hashlib
-import os
 
 from typing import Optional
 from pydantic import SecretStr
@@ -35,6 +31,7 @@ def get_password_hash(password: SecretStr):
     return hashlib.sha256(plain_text).hexdigest()
 
 
+# TODO: Make sure only confirmed vets can create link.
 @router.post("/create_link")
 def create_link(request, account_information: AccountInformation, password: SecretStr):
     hashed_password = get_password_hash(password)
