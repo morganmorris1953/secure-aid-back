@@ -20,7 +20,6 @@ env = environ.Env()
 
 environ.Env.read_env(BASE_DIR / ".env")
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -46,6 +45,7 @@ INSTALLED_APPS = [
     "auth_api.apps.AuthApiConfig",
     "chat_api.apps.ChatApiConfig",
     "passwordless_api.apps.PasswordlessApiConfig",
+
 ]
 
 MIDDLEWARE = [
@@ -57,6 +57,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "request_token.middleware.RequestTokenMiddleware",
+
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -90,6 +91,7 @@ DATABASES = {
         "USER": env("POSTGRES_USER"),
         "PASSWORD": env("POSTGRES_PASSWORD"),
         "HOST": env("POSTGRES_HOST"),
+
     }
 }
 
@@ -134,7 +136,6 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
 VA_APPLICATION_ID = env("VA_APPLICATION_ID")
 VA_API_KEY = env("VA_API_KEY")
 
@@ -151,3 +152,4 @@ JWT_ALGORITHM = env("JWT_ALGORITHM")
 # https://github.com/yunojuno/django-request-token/blob/master/request_token/settings.py
 REQUEST_TOKEN_EXPIRY = 5
 REQUEST_TOKEN_DEFAULT_MAX_USES = 2
+
