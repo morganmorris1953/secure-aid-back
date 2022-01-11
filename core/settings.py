@@ -9,8 +9,9 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-import environ
 from pathlib import Path
+
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,6 +41,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "request_token",
+    "auth_api.apps.AuthApiConfig",
+    "chat_api.apps.ChatApiConfig",
+    "passwordless_api.apps.PasswordlessApiConfig",
+
 ]
 
 MIDDLEWARE = [
@@ -50,6 +56,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "request_token.middleware.RequestTokenMiddleware",
+
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -83,10 +91,9 @@ DATABASES = {
         "USER": env("POSTGRES_USER"),
         "PASSWORD": env("POSTGRES_PASSWORD"),
         "HOST": env("POSTGRES_HOST"),
-        # "TIME_ZONE": True,
+
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -129,8 +136,20 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-VA_API_KEY = env("VA_API_KEY")
 VA_APPLICATION_ID = env("VA_APPLICATION_ID")
+VA_API_KEY = env("VA_API_KEY")
+
 VA_API_OATH_CLIENT_ID = env("VA_API_OATH_CLIENT_ID")
 VA_API_OATH_CLIENT_SECRET = env("VA_API_OATH_CLIENT_SECRET")
 VA_API_OATH_REDIRECT_URI = env("VA_API_OATH_REDIRECT_URI")
+
+
+JWT_SECRET = env("JWT_SECRET")
+JWT_ALGORITHM = env("JWT_ALGORITHM")
+
+
+# django-request-token
+# https://github.com/yunojuno/django-request-token/blob/master/request_token/settings.py
+REQUEST_TOKEN_EXPIRY = 5
+REQUEST_TOKEN_DEFAULT_MAX_USES = 2
+
