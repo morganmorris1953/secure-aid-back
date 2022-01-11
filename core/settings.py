@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
     "request_token",
     "auth_api.apps.AuthApiConfig",
     "chat_api.apps.ChatApiConfig",
