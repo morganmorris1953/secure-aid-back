@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "auth_api.apps.AuthApiConfig",
     "chat_api.apps.ChatApiConfig",
     "passwordless_api.apps.PasswordlessApiConfig",
+    "ticket_api",
 
 ]
 
