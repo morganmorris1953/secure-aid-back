@@ -16,7 +16,7 @@ Including another URLconf
 from django import urls
 from django.contrib import admin
 from django.urls import path
-from django.urls.conf import include, include
+from django.urls.conf import include
 from ticket_api.urls import router as ticket_router
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView)
 from .api import api
