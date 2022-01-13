@@ -57,7 +57,6 @@ def use_token(request_token: RequestToken, request):
     log_token_use(request_token, request, 200)
 
 
-# Create your views here.
 @router.get("/use_token", url_name="use_token")
 def use_link(request, token: str, password: SecretStr):
     decoded_token = decode(token)
