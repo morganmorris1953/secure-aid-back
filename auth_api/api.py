@@ -60,10 +60,10 @@ def callback_debugger(request, code: str, state: str):
 
     user.groups.add(models.confirmed_veteran_group)
 
-    # assert models.is_confirmed_veteran(user)
+    assert models.is_confirmed_veteran(user)
+
+    jwt_token = jwt.create_access_token(verified_user=user)
 
     verified_user = schemas.UserSchema.from_orm(user)
 
-    jwt_token = jwt.create_access_token(verified_user=verified_user)
-
-    return schemas.AuthorizationResponse(user=verified_user, jwt=jwt_token)
+    return schemas.AuthorizationResponse(user=verified_user, token=jwt_token)
