@@ -3,7 +3,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.contrib.auth.models import User
-from 
+from ticket_api.models import Ticket
 
 def validate_message_content(content):
     if content is None or content == "" or content.isspace():
@@ -22,21 +22,24 @@ class Message(models.Model):
         editable=False
     )
     room = models.ForeignKey(
-        
+        Ticket,
+        on_delete=models.CASCADE,
+        related_name='chat_room',
     )
     
     author = models.ForeignKey(
         User,
         blank=False,
         null=False,
-        related_name='author_messages',
+        related_name='message_history',
         on_delete=models.CASCADE
     )
     content = models.TextField(validators=[validate_message_content])
     created_at = models.DateTimeField(auto_now_add=True, blank=True)
 
-    def last_50_messages():
-        return Message.objects.order_by('-created_at').all()[:50]
+    @classmethod
+    def last_50_messages(cls, room_id):
+        return cls.objects.filter(room_id=room_id).order_by('created_at').all()[:50]
 
 class UserMessages(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

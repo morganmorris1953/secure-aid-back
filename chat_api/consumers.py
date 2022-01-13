@@ -21,7 +21,8 @@ class ChatConsumer(WebsocketConsumer):
         self.send_message(content)
 
     def fetch_messages(self, data):
-        messages = Message.last_50_messages()
+        room_id = data['room_id']
+        messages = Message.last_50_messages(room_id)
         content = {
             'command': 'messages',
             'messages': self.messages_to_json(messages)
@@ -29,10 +30,12 @@ class ChatConsumer(WebsocketConsumer):
         self.send_message(content)
 
     def new_message(self, data):
+        print(data)
         author = data['from']
         text = data['text']
+        room_id = data['room_id']
         author_user, created = User.objects.get_or_create(username=author)
-        message = Message.objects.create(author=author_user, content=text)
+        message = Message.objects.create(author=author_user, content=text, room_id=room_id)
         content = {
             'command': 'new_message',
             'message': self.message_to_json(message)
