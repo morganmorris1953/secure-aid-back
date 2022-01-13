@@ -18,11 +18,13 @@ from django.contrib import admin
 from django.urls import path
 from django.urls.conf import include
 from ticket_api.urls import router as ticket_router
-
+from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView)
 from .api import api
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", api.urls),
     path("ticket_api/", include(ticket_router.urls)),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
