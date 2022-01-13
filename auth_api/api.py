@@ -30,6 +30,15 @@ def get_va_gov_user_authorization_url(request):
     return schemas.URL(url=url)
 
 
+@router.get(
+    "/current_user", response=schemas.UserSchema, url_name="current_user", auth=jwt.AuthBearer()
+)
+def get_current_user(request):
+    user = request.auth
+    # print(user.groups.first())
+    return schemas.UserSchema.from_orm(request.auth)
+
+
 @router.get("callback", response=schemas.AuthorizationResponse)
 def callback_debugger(request, code: str, state: str):
 
@@ -60,10 +69,10 @@ def callback_debugger(request, code: str, state: str):
 
     user.groups.add(models.confirmed_veteran_group)
 
-    # assert models.is_confirmed_veteran(user)
+    assert models.is_confirmed_veteran(user)
+
+    jwt_token = jwt.create_access_token(verified_user=user)
 
     verified_user = schemas.UserSchema.from_orm(user)
 
-    jwt_token = jwt.create_access_token(verified_user=verified_user)
-
-    return schemas.AuthorizationResponse(user=verified_user, jwt=jwt_token)
+    return schemas.AuthorizationResponse(user=verified_user, token=jwt_token)
