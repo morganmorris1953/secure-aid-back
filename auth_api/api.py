@@ -30,6 +30,15 @@ def get_va_gov_user_authorization_url(request):
     return schemas.URL(url=url)
 
 
+@router.get(
+    "/current_user", response=schemas.UserSchema, url_name="current_user", auth=jwt.AuthBearer()
+)
+def get_current_user(request):
+    user = request.auth
+    # print(user.groups.first())
+    return schemas.UserSchema.from_orm(request.auth)
+
+
 @router.get("callback", response=schemas.AuthorizationResponse)
 def callback_debugger(request, code: str, state: str):
 

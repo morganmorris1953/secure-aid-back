@@ -7,7 +7,8 @@ from django.shortcuts import get_object_or_404
 from jose import JWTError, jwt
 from ninja.security import HttpBearer
 from pydantic import ValidationError
-from rest_framework_simplejwt.tokens import RefreshToken
+
+from .views import UserTokenObtainPairSerializer
 
 from . import schemas
 
@@ -17,7 +18,7 @@ JWT_ALGORITHM = settings.JWT_ALGORITHM
 
 
 def create_access_token(*, verified_user: User) -> schemas.JsonWebToken:
-    refresh_token = RefreshToken.for_user(verified_user)
+    refresh_token = UserTokenObtainPairSerializer.get_token(verified_user)
 
     return schemas.JsonWebToken(
         access_token=str(refresh_token.access_token),
