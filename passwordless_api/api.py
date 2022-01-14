@@ -34,8 +34,10 @@ def get_password_hash(password: SecretStr):
 from pprint import pprint
 
 # TODO: Make sure only confirmed vets can create link.
-@router.post("/create_link")
+@router.post("/create_link", auth=jwt.VeteranAuthBearer())
 def create_link(request, account_information: AccountInformation, link_password: SecretStr):
+    print(request.auth)
+
     hashed_password = get_password_hash(link_password)
     token = RequestToken.objects.create_token(
         scope=hashed_password,
