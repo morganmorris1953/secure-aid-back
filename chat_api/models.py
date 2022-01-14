@@ -40,6 +40,8 @@ class Message(models.Model):
     @classmethod
     def last_50_messages(cls, room_id):
         return cls.objects.filter(room_id=room_id).order_by('created_at').all()[:50]
+    def __str__(self):
+        return self.author
 
 class UserMessages(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

@@ -10,7 +10,7 @@ class ChatConsumer(WebsocketConsumer):
 
     def init_chat(self, data):
         username = data['username']
-        user, created = User.objects.get_or_create(username=username)
+        user = User.objects.get(username=username)
         content = {
             'command': 'init_chat'
         }
@@ -34,7 +34,7 @@ class ChatConsumer(WebsocketConsumer):
         author = data['from']
         text = data['text']
         room_id = data['room_id']
-        author_user, created = User.objects.get_or_create(username=author)
+        author_user = User.objects.get(username=author)
         message = Message.objects.create(author=author_user, content=text, room_id=room_id)
         content = {
             'command': 'new_message',
@@ -51,7 +51,7 @@ class ChatConsumer(WebsocketConsumer):
     def message_to_json(self, message):
         return {
             'id': str(message.id),
-            'author': message.author.username,
+            'author': message.author.first_name,
             'content': message.content,
             'created_at': str(message.created_at)
         }
