@@ -24,7 +24,7 @@ class Ticket(models.Model):
     provider_comments = models.TextField(null=True, blank=True)
     aid_recipient_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="Recipient_in_Ticket")
     aid_provider_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name="Provider_in_Ticket")
-    # chat_room_id = models.ForeignKey(Rooms, on_delete=CASCADE, null=True, blank=True)
+    sponsor_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name="Sponsor_in_Ticket")
 
     def __str__(self):
         return f"Ticket:{id} created:{self.created_on} recipient:{self.aid_recipient_id} status:{self.status} Provider:{self.aid_provider_id}"
