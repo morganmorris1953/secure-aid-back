@@ -31,16 +31,21 @@ def get_password_hash(password: SecretStr):
     return hashlib.sha256(plain_text).hexdigest()
 
 
+from pprint import pprint
+
 # TODO: Make sure only confirmed vets can create link.
-@router.post("/create_link")
+@router.post("/create_link", auth=jwt.VeteranAuthBearer())
 def create_link(request, account_information: AccountInformation, link_password: SecretStr):
+    print(request.auth)
+
     hashed_password = get_password_hash(link_password)
     token = RequestToken.objects.create_token(
         scope=hashed_password,
         login_mode=RequestToken.LOGIN_MODE_NONE,
         data=account_information.dict(),
     )
-    return request.build_absolute_uri(reverse("api-1.0.0:use_token") + "?token=" + token.jwt())
+    origin = request.META.get("HTTP_REFERER")
+    return request.build_absolute_uri(origin + "?token=" + token.jwt())
 
 
 @router.get("/check", url_name="check_link", response=AccountInformation)

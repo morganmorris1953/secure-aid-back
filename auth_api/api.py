@@ -35,7 +35,6 @@ def get_va_gov_user_authorization_url(request):
 )
 def get_current_user(request):
     user = request.auth
-    # print(user.groups.first())
     return schemas.UserSchema.from_orm(request.auth)
 
 
