@@ -1,6 +1,7 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth.models import Group
+from django.http import HttpResponseBadRequest
 
 # ========================================================
 ## Serializes user Model (simple_JWT)
@@ -11,20 +12,18 @@ class UserTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
 
         # Add custom claims
-        token["name"] = user.username
-        token["user_id"] = user.id
+        token["id"] = user.id
+        token["username"] = user.username
+        token["first_name"] = user.first_name
+        token["last_name"] = user.last_name
+        token["email"] = user.email
 
-        recipient_group = user.groups.filter(name="Recipient").exists()
-        veteran_group = user.groups.filter(name="Veteran").exists()
+        groups = list(user.groups.values("id", "name"))
 
-        if recipient_group:
-            token["group"] = "recipient"
-
-        elif veteran_group:
-            token["group"] = "veteran"
-
-        else:
+        if len(groups) != 1:
             raise Exception("User must be in a group.")
+
+        token["group"] = groups.pop()
 
         return token
 
