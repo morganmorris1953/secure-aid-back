@@ -19,4 +19,5 @@ class TicketSerializer(serializers.ModelSerializer):
             "provider_comments",
             "aid_recipient_id",
             "aid_provider_id",
+            "sponsor_id",
         ]
