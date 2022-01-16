@@ -5,41 +5,30 @@ from .models import UserMessages, Message
 from django.contrib.auth.models import User
 
 
-
 class ChatConsumer(WebsocketConsumer):
-
     def init_chat(self, data):
-        username = data['username']
+        username = data["username"]
         user = User.objects.get(username=username)
-        content = {
-            'command': 'init_chat'
-        }
+        content = {"command": "init_chat"}
         if not user:
-            content['error'] = 'Unable to get or create User with username: ' + username
+            content["error"] = "Unable to get or create User with username: " + username
             self.send_message(content)
-        content['success'] = 'Chatting in with success with username: ' + username
+        content["success"] = "Chatting in with success with username: " + username
         self.send_message(content)
 
     def fetch_messages(self, data):
-        room_id = data['room_id']
+        room_id = data["room_id"]
         messages = Message.last_50_messages(room_id)
-        content = {
-            'command': 'messages',
-            'messages': self.messages_to_json(messages)
-        }
+        content = {"command": "messages", "messages": self.messages_to_json(messages)}
         self.send_message(content)
 
     def new_message(self, data):
-        print(data)
-        author = data['from']
-        text = data['text']
-        room_id = data['room_id']
+        author = data["from"]
+        text = data["text"]
+        room_id = data["room_id"]
         author_user = User.objects.get(username=author)
         message = Message.objects.create(author=author_user, content=text, room_id=room_id)
-        content = {
-            'command': 'new_message',
-            'message': self.message_to_json(message)
-        }
+        content = {"command": "new_message", "message": self.message_to_json(message)}
         self.send_chat_message(content)
 
     def messages_to_json(self, messages):
@@ -50,40 +39,34 @@ class ChatConsumer(WebsocketConsumer):
 
     def message_to_json(self, message):
         return {
-            'id': str(message.id),
-            'author': message.author.first_name,
-            'content': message.content,
-            'created_at': str(message.created_at)
+            "id": str(message.id),
+            "author": message.author.first_name,
+            "content": message.content,
+            "created_at": str(message.created_at),
         }
 
     commands = {
-        'init_chat': init_chat,
-        'fetch_messages': fetch_messages,
-        'new_message': new_message
+        "init_chat": init_chat,
+        "fetch_messages": fetch_messages,
+        "new_message": new_message,
     }
 
     def connect(self):
-        self.room_name = 'room'
-        self.room_group_name = 'chat_%s' % self.room_name
+        self.room_name = "room"
+        self.room_group_name = "chat_%s" % self.room_name
 
         # Join room group
-        async_to_sync(self.channel_layer.group_add)(
-            self.room_group_name,
-            self.channel_name
-        )
+        async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
         self.accept()
 
     def disconnect(self, close_code):
         # leave group room
-        async_to_sync(self.channel_layer.group_discard)(
-            self.room_group_name,
-            self.channel_name
-        )
+        async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
 
     def receive(self, text_data):
         data = json.loads(text_data)
         print(data)
-        self.commands[data['command']](self, data)
+        self.commands[data["command"]](self, data)
 
     def send_message(self, message):
         self.send(text_data=json.dumps(message))
@@ -91,15 +74,11 @@ class ChatConsumer(WebsocketConsumer):
     def send_chat_message(self, message):
         # Send message to room group
         async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
-            {
-                'type': 'chat_message',
-                'message': message
-            }
+            self.room_group_name, {"type": "chat_message", "message": message}
         )
 
     # Receive message from room group
     def chat_message(self, event):
-        message = event['message']
+        message = event["message"]
         # Send message to WebSocket
         self.send(text_data=json.dumps(message))

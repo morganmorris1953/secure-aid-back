@@ -12,7 +12,7 @@ from auth_api import schemas as auth_schemas, jwt
 import hashlib
 
 from typing import Optional
-from pydantic import SecretStr
+from pydantic import SecretStr, HttpUrl, AnyHttpUrl
 
 from . import models
 
@@ -24,6 +24,15 @@ class AccountInformation(Schema):
     first_name: str
     last_name: str
     email: str
+    sponsor_id: Optional[int]
+
+
+class Message(Schema):
+    message: str
+
+
+class URL(Schema):
+    url: AnyHttpUrl
 
 
 def get_password_hash(password: SecretStr):
@@ -34,18 +43,24 @@ def get_password_hash(password: SecretStr):
 from pprint import pprint
 
 # TODO: Make sure only confirmed vets can create link.
-@router.post("/create_link", auth=jwt.VeteranAuthBearer())
+@router.post("/create_link", auth=jwt.VeteranAuthBearer(), response={200: URL, 400: Message})
 def create_link(request, account_information: AccountInformation, link_password: SecretStr):
-    print(request.auth)
+    user_collision = User.objects.filter(username=account_information.username).exists()
+    if user_collision:
+        return 400, Message(message="Choose a different username.")
 
     hashed_password = get_password_hash(link_password)
+
+    account_information.sponsor_id = request.auth.id
+
     token = RequestToken.objects.create_token(
         scope=hashed_password,
         login_mode=RequestToken.LOGIN_MODE_NONE,
         data=account_information.dict(),
     )
     origin = request.META.get("HTTP_REFERER")
-    return request.build_absolute_uri(origin + "?token=" + token.jwt())
+    url = request.build_absolute_uri(origin + "?token=" + token.jwt())
+    return 200, URL(url=url)
 
 
 @router.get("/check", url_name="check_link", response=AccountInformation)
@@ -73,10 +88,14 @@ def use_link(request, token: str, link_password: SecretStr, new_password: Secret
     if hashed_password != request_token.scope:
         raise Http404("Unauthorized")
 
-    user, created_user = User.objects.get_or_create(**request_token.data)
+    sponsor_id = request_token.data.pop("sponsor_id")
+
+    user, created = User.objects.get_or_create(**request_token.data)
     user.set_password(new_password.get_secret_value())
     user.groups.add(models.approved_recipient)
     user.save()
+
+    refferal, created = models.Referral.objects.get_or_create(sponsor_id=sponsor_id, recipient=user)
 
     if not models.is_approved_recipient(user):
         raise Http404("Unauthorized")
