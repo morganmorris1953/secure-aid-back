@@ -14,7 +14,8 @@ import hashlib
 from typing import Optional
 from pydantic import SecretStr, HttpUrl, AnyHttpUrl
 
-from . import models
+from user_api import models as user_models
+
 
 router = Router()
 
@@ -39,8 +40,6 @@ def get_password_hash(password: SecretStr):
     plain_text = password.get_secret_value().encode()
     return hashlib.sha256(plain_text).hexdigest()
 
-
-from pprint import pprint
 
 # TODO: Make sure only confirmed vets can create link.
 @router.post("/create_link", auth=jwt.VeteranAuthBearer(), response={200: URL, 400: Message})
@@ -92,12 +91,14 @@ def use_link(request, token: str, link_password: SecretStr, new_password: Secret
 
     user, created = User.objects.get_or_create(**request_token.data)
     user.set_password(new_password.get_secret_value())
-    user.groups.add(models.approved_recipient)
+    user.groups.add(user_models.recipient_group)
     user.save()
 
-    refferal, created = models.Referral.objects.get_or_create(sponsor_id=sponsor_id, recipient=user)
+    refferal, created = user_models.Referral.objects.get_or_create(
+        sponsor_id=sponsor_id, recipient=user
+    )
 
-    if not models.is_approved_recipient(user):
+    if not user_models.is_recipient(user):
         raise Http404("Unauthorized")
 
     jwt_token = jwt.create_access_token(verified_user=user)

@@ -8,11 +8,11 @@ from jose import JWTError, jwt
 from ninja.security import HttpBearer
 from pydantic import ValidationError
 
-from passwordless_api import models as passwordless_models
+from user_api import models as user_models
 
 from .views import UserTokenObtainPairSerializer
 
-from . import schemas, models
+from . import schemas
 
 
 JWT_SECRET = settings.JWT_SECRET
@@ -53,7 +53,7 @@ class VeteranAuthBearer(HttpBearer):
         try:
             user_id = verify_access_token(token=token)
             verified_user = get_object_or_404(User, id=user_id)
-            assert models.is_confirmed_veteran(verified_user)
+            assert user_models.is_veteran(verified_user)
             return verified_user
         except (ValidationError, JWTError, User.DoesNotExist, AssertionError) as e:
             raise InvalidToken
@@ -64,7 +64,18 @@ class RecipientAuthBearer(HttpBearer):
         try:
             user_id = verify_access_token(token=token)
             verified_user = get_object_or_404(User, id=user_id)
-            assert passwordless_models.is_approved_recipient(verified_user)
+            assert user_models.is_recipient(verified_user)
+            return verified_user
+        except (ValidationError, JWTError, User.DoesNotExist, AssertionError) as e:
+            raise InvalidToken
+
+
+class ProviderAuthBearer(HttpBearer):
+    def authenticate(self, request, token):
+        try:
+            user_id = verify_access_token(token=token)
+            verified_user = get_object_or_404(User, id=user_id)
+            assert user_models.is_provider(verified_user)
             return verified_user
         except (ValidationError, JWTError, User.DoesNotExist, AssertionError) as e:
             raise InvalidToken

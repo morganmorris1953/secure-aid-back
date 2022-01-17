@@ -15,7 +15,8 @@ from .va_gov import (
     AUTHORIZATION_URL,
     USERINFO_URL,
 )
-from . import schemas, jwt, models
+from . import schemas, jwt
+from user_api import models as user_models
 
 
 router = Router()
@@ -66,9 +67,9 @@ def callback_debugger(request, code: str, state: str):
 
     user, created = User.objects.get_or_create(**va_profile.to_military_bridge_profile().dict())
 
-    user.groups.add(models.confirmed_veteran_group)
+    user.groups.add(user_models.veteran_group)
 
-    assert models.is_confirmed_veteran(user)
+    assert user_models.is_veteran(user)
 
     jwt_token = jwt.create_access_token(verified_user=user)
 
