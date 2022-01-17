@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "chat_api.apps.ChatApiConfig",
     "passwordless_api.apps.PasswordlessApiConfig",
     "ticket_api.apps.TicketApiConfig",
+    "user_api.apps.UserApiConfig",
 ]
 
 MIDDLEWARE = [
