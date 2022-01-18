@@ -10,7 +10,7 @@ CATEGORIES = (
 
 STATUSES = (
     ("Awaiting","Awaiting"),
-    ("In-Progess","In-Progess"),
+    ("In-Progress","In-Progress"),
     ("Complete","Complete")
 )
 
