@@ -5,7 +5,7 @@ from django.conf import settings
 CATEGORIES = (
     ("Medical", "Medical"),
     ("Legal","Legal"),
-    ("Finacial","Finacial")
+    ("Financial","Financial")
 )
 
 STATUSES = (
