@@ -1,0 +1,55 @@
+# Modify this code to update the DB schema diagram.
+# To reset the sample schema, replace everything with
+# two dots ('..' - without quotes).
+
+User
+----
+id PK int
+email string
+firstname string
+lastname string
+password string
+
+
+MilitaryMemberProfile #AdvocateProfile
+----
+id PK int
+user_id int FK - User.id
+
+
+#standard sign-up
+ProviderProfile
+----
+id PK int
+user_id int FK - User.id
+organization int
+verified bool 
+phone_number: int
+address: text
+website: str
+#default to false
+
+
+AidRecipientProfile #RecipientProfile
+----
+id PK int
+user_id int FK - User.id
+sponsor_id int FK - MilitaryMemberProfile.id
+
+
+
+Ticket
+----
+id PK int
+created_on datetime
+title string
+category string
+urgency string
+status string
+advocate_comments string
+provider_comments string
+# created, accepted, in-progress, 
+# pending, denied, fullfilled, expired, completed
+aid_recipient_id int FK - AidRecipientProfile.id
+provider_id int FK - ProviderProfile.id
+chat_room_id int # chat
